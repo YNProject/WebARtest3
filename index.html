@@ -5,24 +5,28 @@
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mind-ar-face-aframe.prod.js"></script>
     <style>
-        body { margin: 0; overflow: hidden; background: #000; }
-        /* 画面が真っ白な時に「動いている」ことを示す表示 */
-        #loader {
+        body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; }
+        #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #222; color: #FFB6C1; display: flex; 
+            background: #fff; z-index: 999; display: flex; 
             flex-direction: column; justify-content: center; align-items: center;
-            z-index: 999; font-family: sans-serif;
         }
+        button {
+            padding: 20px 40px; font-size: 18px; background: #FFB6C1;
+            border: none; border-radius: 50px; color: #444; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        #status { margin-top: 20px; font-size: 14px; color: #888; }
     </style>
 </head>
 <body>
-    <div id="loader">
-        <p>🌸 桜AR 準備中 🌸</p>
-        <p style="font-size: 12px; opacity: 0.7;">カメラの許可ダイアログをお待ちください</p>
+    <div id="overlay">
+        <button id="start-btn">自撮りARを開始する</button>
+        <div id="status">カメラの読み込みに時間がかかる場合があります</div>
     </div>
 
     <a-scene 
-        mindar-face="autoStart: true; uiLoading: no; uiError: yes; uiScanning: no;" 
+        mindar-face="autoStart: false; uiLoading: no; uiError: yes; uiScanning: no;" 
         embedded vr-mode-ui="enabled: false" 
         device-orientation-permission-ui="enabled: false">
         
@@ -35,27 +39,32 @@
         <a-entity mindar-face-target="anchorIndex: 8">
             <a-plane 
                 src="#sakura-img" 
-                position="0 0 0.05" 
-                width="0.25" height="0.25" 
+                position="0 0 0.1" 
+                width="0.3" height="0.3" 
                 material="transparent: true; alphaTest: 0.5; shader: flat">
             </a-plane>
         </a-entity>
     </a-scene>
 
     <script>
+        const startBtn = document.querySelector('#start-btn');
+        const overlay = document.querySelector('#overlay');
         const sceneEl = document.querySelector('a-scene');
-        const loader = document.querySelector('#loader');
 
-        // カメラが起動してARの準備ができたらローディングを消す
-        sceneEl.addEventListener("arReady", () => {
-            console.log("MindAR is ready");
-            loader.style.display = "none";
+        startBtn.addEventListener('click', () => {
+            startBtn.innerHTML = "起動中...";
+            // A-Frame の mindar-face システムを直接起動
+            const system = sceneEl.systems['mindar-face-system'];
+            system.start(); 
         });
 
-        // そもそもARが開始されなかった場合
+        sceneEl.addEventListener("arReady", () => {
+            overlay.style.display = "none";
+        });
+
         sceneEl.addEventListener("arError", (e) => {
-            console.error("MindAR Error", e);
-            loader.innerHTML = "<p>カメラが起動できませんでした。<br>設定でカメラ許可を確認してください。</p>";
+            alert("カメラエラーが発生しました。ブラウザの設定でカメラを許可してください。");
+            startBtn.innerHTML = "再開する";
         });
     </script>
 </body>
