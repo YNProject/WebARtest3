@@ -1,30 +1,62 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.5/dist/mind-ar-face-aframe.prod.js"></script>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mind-ar-face-aframe.prod.js"></script>
     <style>
-      body { margin: 0; overflow: hidden; }
-      /* 読み込み中の表示を少し整える */
-      .mindar-ui-loading { background: rgba(0,0,0,0.8); }
+        body { margin: 0; overflow: hidden; background: #000; }
+        /* 画面が真っ白な時に「動いている」ことを示す表示 */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #222; color: #FFB6C1; display: flex; 
+            flex-direction: column; justify-content: center; align-items: center;
+            z-index: 999; font-family: sans-serif;
+        }
     </style>
-  </head>
-  <body>
-    <a-scene mindar-face embedded vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-      <a-assets>
-        <img id="sakura-img" src="img/sakura.png">
-      </a-assets>
+</head>
+<body>
+    <div id="loader">
+        <p>🌸 桜AR 準備中 🌸</p>
+        <p style="font-size: 12px; opacity: 0.7;">カメラの許可ダイアログをお待ちください</p>
+    </div>
 
-      <a-camera active="false" position="0 0 0"></a-camera>
+    <a-scene 
+        mindar-face="autoStart: true; uiLoading: no; uiError: yes; uiScanning: no;" 
+        embedded vr-mode-ui="enabled: false" 
+        device-orientation-permission-ui="enabled: false">
+        
+        <a-assets>
+            <img id="sakura-img" src="img/sakura.png">
+        </a-assets>
 
-      <a-entity mindar-face-target="anchorIndex: 168">
-        <a-plane src="#sakura-img" 
-                 position="0 0 0" 
-                 width="0.2" height="0.2" 
-                 material="transparent: true; alphaTest: 0.5; shader: flat">
-        </a-plane>
-      </a-entity>
+        <a-camera active="false" position="0 0 0"></a-camera>
+
+        <a-entity mindar-face-target="anchorIndex: 8">
+            <a-plane 
+                src="#sakura-img" 
+                position="0 0 0.05" 
+                width="0.25" height="0.25" 
+                material="transparent: true; alphaTest: 0.5; shader: flat">
+            </a-plane>
+        </a-entity>
     </a-scene>
-  </body>
+
+    <script>
+        const sceneEl = document.querySelector('a-scene');
+        const loader = document.querySelector('#loader');
+
+        // カメラが起動してARの準備ができたらローディングを消す
+        sceneEl.addEventListener("arReady", () => {
+            console.log("MindAR is ready");
+            loader.style.display = "none";
+        });
+
+        // そもそもARが開始されなかった場合
+        sceneEl.addEventListener("arError", (e) => {
+            console.error("MindAR Error", e);
+            loader.innerHTML = "<p>カメラが起動できませんでした。<br>設定でカメラ許可を確認してください。</p>";
+        });
+    </script>
+</body>
 </html>
