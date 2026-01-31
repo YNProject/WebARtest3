@@ -1,34 +1,24 @@
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-face-aframe.prod.js"></script>
-  </head>
-  <body>
-    <a-scene 
-      mindar-face="autoStart: true; filterMinCF: 0.0001; filterBeta: 0.001;" 
-      embedded 
-      color-space="sRGB" 
-      renderer="colorManagement: true, physicallyCorrectLights" 
-      vr-mode-ui="enabled: false" 
-      device-orientation-permission-ui="enabled: false">
-      
-      <a-assets>
-        <img id="sakura-img" src="img/sakura3.png">
-      </a-assets>
+<a-scene 
+  mindar-face="autoStart: true; facingMode: environment; filterMinCF: 0.0001; filterBeta: 0.001;" 
+  embedded 
+  color-space="sRGB" 
+  renderer="colorManagement: true, physicallyCorrectLights" 
+  vr-mode-ui="enabled: false" 
+  device-orientation-permission-ui="enabled: false">
+  
+  <a-assets>
+    <img id="sakura-img" src="img/sakura3.png">
+  </a-assets>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity mindar-face-target="anchorIndex: 10">
-        <a-plane 
-          src="#sakura-img" 
-          position="0 0 0.01" 
-          width="3.0" 
-          height="3.0" 
-          material="transparent: true; alphaTest: 0.5; shader: flat">
-        </a-plane>
-      </a-entity>
-
-    </a-scene>
-  </body>
-</html>
+  <a-entity mindar-face-target="anchorIndex: 10">
+    <a-plane 
+      src="#sakura-img" 
+      position="0 0.5 0.1" 
+      width="1.5" 
+      height="1.5" 
+      material="transparent: true; alphaTest: 0.5; shader: flat">
+    </a-plane>
+  </a-entity>
+</a-scene>
